@@ -1,1336 +1,346 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NK Studio | Virtuális asszisztencia és AOC rendszer</title>
-  <meta name="description" content="Virtuális asszisztencia, projektmenedzsment és AOC rendszer bevezetés az NK Studio-tól. Strukturált működés, átlátható folyamatok és skálázható operatív támogatás vállalkozásoknak." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <style>
-    :root{
-      --bg:#f5fbf8;
-      --surface:#ffffff;
-      --surface-2:#f8fcfa;
-      --text:#0f172a;
-      --muted:#475569;
-      --line:rgba(15,23,42,.08);
-      --brand:#5c8467;
-      --brand-dark:#4b6f56;
-      --brand-soft:#e6f0e8;
-      --gold:#c89c3d;
-      --accent:#0b3b2e;
-      --shadow:0 18px 60px rgba(2,44,34,.08);
-      --container:min(1180px, 92vw);
-    }
-
-    *{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{
-      font-family:'Inter',sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(92,132,103,.08), transparent 26%),
-        radial-gradient(circle at right 10% top 20%, rgba(11,59,46,.06), transparent 22%),
-        var(--bg);
-      line-height:1.6;
-    }
-
-    body.menu-open{overflow:hidden}
-    img{max-width:100%;display:block}
-    a{text-decoration:none;color:inherit}
-    .container{width:var(--container);margin:0 auto}
-
-    .reveal{
-      opacity:0;
-      transform:translateY(24px);
-      transition:opacity .7s ease, transform .7s ease;
-    }
-
-    .reveal.visible{
-      opacity:1;
-      transform:translateY(0);
-    }
-
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:1000;
-      backdrop-filter:blur(14px);
-      background:rgba(245,251,248,.82);
-      border-bottom:1px solid rgba(255,255,255,.7);
-    }
-
-    .nav{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:20px;
-      min-height:88px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      position:relative;
-      z-index:1003;
-    }
-
-    .brand-logo{
-      height:54px;
-      width:auto;
-      object-fit:contain;
-      display:block;
-    }
-
-    .brand-text{
-      display:flex;
-      flex-direction:column;
-      line-height:1.05;
-    }
-
-    .brand-text strong{
-      font-size:1.05rem;
-      letter-spacing:.03em;
-    }
-
-    .brand-text span{
-      color:var(--muted);
-      font-size:.82rem;
-      font-weight:600;
-    }
-
-    .nav-links{
-      display:flex;
-      align-items:center;
-      gap:28px;
-      list-style:none;
-      color:var(--muted);
-      font-weight:600;
-      font-size:.96rem;
-    }
-
-    .nav-links a:hover{color:var(--brand-dark)}
-
-    .nav-actions{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .nav-cta{
-      padding:12px 18px;
-      background:var(--text);
-      color:#fff;
-      border-radius:999px;
-      font-weight:700;
-      box-shadow:var(--shadow);
-    }
-
-    .menu-toggle{
-      display:none;
-      width:48px;
-      height:48px;
-      border:none;
-      border-radius:14px;
-      background:rgba(255,255,255,.9);
-      box-shadow:var(--shadow);
-      cursor:pointer;
-      position:relative;
-      z-index:1003;
-    }
-
-    .menu-toggle span{
-      display:block;
-      width:20px;
-      height:2px;
-      background:var(--text);
-      margin:4px auto;
-      transition:.25s ease;
-    }
-
-    .menu-toggle.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
-    .menu-toggle.active span:nth-child(2){opacity:0}
-    .menu-toggle.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-
-    .hero,
-    .image-section{
-      position:relative;
-      overflow:hidden;
-      isolation:isolate;
-    }
-
-    .hero{
-      padding:78px 0 48px;
-    }
-
-    .hero::before,
-    .image-section::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background-position:center;
-      background-size:cover;
-      background-repeat:no-repeat;
-      z-index:-2;
-      transform:scale(1.03);
-    }
-
-    .hero::after,
-    .image-section::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:-1;
-    }
-
-    .hero::before{
-      background-image:url('https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1800&q=80');
-    }
-
-    .hero::after{
-      background:
-        linear-gradient(90deg, rgba(245,251,248,.95) 0%, rgba(245,251,248,.90) 40%, rgba(245,251,248,.78) 62%, rgba(245,251,248,.88) 100%);
-    }
-
-    .bg-trust::before{
-      background-image:url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80');
-    }
-
-    .bg-trust::after{
-      background:linear-gradient(135deg, rgba(248,252,250,.92), rgba(248,252,250,.90));
-    }
-
-    .bg-services::before{
-      background-image:url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1800&q=80');
-    }
-
-    .bg-services::after{
-      background:linear-gradient(135deg, rgba(245,251,248,.92), rgba(245,251,248,.88));
-    }
-
-    .bg-aoc::before{
-      background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80');
-    }
-
-    .bg-aoc::after{
-      background:linear-gradient(135deg, rgba(247,252,249,.93), rgba(247,252,249,.88));
-    }
-
-    .bg-process::before{
-      background-image:url('https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1800&q=80');
-    }
-
-    .bg-process::after{
-      background:linear-gradient(135deg, rgba(246,251,248,.93), rgba(246,251,248,.88));
-    }
-
-    .bg-testimonials::before{
-      background-image:url('https://images.unsplash.com/photo-1515169067868-5387ec356754?auto=format&fit=crop&w=1800&q=80');
-    }
-
-    .bg-testimonials::after{
-      background:linear-gradient(135deg, rgba(248,252,250,.93), rgba(248,252,250,.88));
-    }
-
-    .bg-quote::before{
-      background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=80');
-      filter:saturate(.9);
-    }
-
-    .bg-quote::after{
-      background:linear-gradient(135deg, rgba(8,45,34,.82), rgba(20,83,45,.86));
-    }
-
-    .bg-contact::before{
-      background-image:url('https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&w=1800&q=80');
-    }
-
-    .bg-contact::after{
-      background:linear-gradient(135deg, rgba(246,251,248,.93), rgba(246,251,248,.89));
-    }
-
-    .hero-wrap{
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:42px;
-      align-items:center;
-    }
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 14px;
-      background:var(--brand-soft);
-      color:var(--brand-dark);
-      border-radius:999px;
-      font-size:.9rem;
-      font-weight:700;
-      margin-bottom:20px;
-    }
-
-    h1{
-      font-size:clamp(2.6rem,5vw,4.7rem);
-      line-height:1.02;
-      letter-spacing:-.04em;
-      margin-bottom:22px;
-      max-width:12ch;
-    }
-
-    .hero p{
-      font-size:1.08rem;
-      color:var(--muted);
-      max-width:62ch;
-      margin-bottom:28px;
-    }
-
-    .hero-actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:14px;
-      margin-bottom:28px;
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:15px 22px;
-      border-radius:999px;
-      font-weight:700;
-      transition:.25s ease;
-    }
-
-    .btn-primary{
-      background:linear-gradient(135deg,var(--brand),#719b7b);
-      color:white;
-      box-shadow:0 18px 38px rgba(92,132,103,.22);
-    }
-
-    .btn-primary:hover{transform:translateY(-2px)}
-
-    .btn-secondary{
-      background:rgba(255,255,255,.78);
-      border:1px solid var(--line);
-      color:var(--text);
-    }
-
-    .mini-proof{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:14px;
-      max-width:720px;
-    }
-
-    .mini-proof div{
-      background:rgba(255,255,255,.76);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(6px);
-    }
-
-    .mini-proof strong{display:block;font-size:1.15rem;margin-bottom:4px}
-    .mini-proof span{color:var(--muted);font-size:.95rem}
-
-    .hero-card{
-      position:relative;
-      background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(244,251,246,.93));
-      border:1px solid rgba(255,255,255,.9);
-      border-radius:32px;
-      padding:28px;
-      box-shadow:0 30px 80px rgba(4,33,24,.10);
-      overflow:hidden;
-      backdrop-filter:blur(8px);
-    }
-
-    .hero-card::before{
-      content:"";
-      position:absolute;
-      inset:auto -50px -50px auto;
-      width:180px;
-      height:180px;
-      background:radial-gradient(circle, rgba(34,197,94,.20), transparent 68%);
-    }
-
-    .panel{
-      background:rgba(255,255,255,.92);
-      border-radius:24px;
-      border:1px solid var(--line);
-      padding:22px;
-      box-shadow:var(--shadow);
-    }
-
-    .stack{display:grid;gap:16px}
-
-    .task-row{
-      display:flex;
-      justify-content:space-between;
-      gap:18px;
-      padding:14px 0;
-      border-bottom:1px solid var(--line);
-    }
-
-    .task-row:last-child{border-bottom:none;padding-bottom:0}
-    .task-row:first-child{padding-top:0}
-
-    .task-title{font-weight:700;margin-bottom:4px}
-    .task-copy{font-size:.94rem;color:var(--muted)}
-
-    .badge{
-      white-space:nowrap;
-      padding:8px 12px;
-      border-radius:999px;
-      background:var(--brand-soft);
-      color:var(--brand-dark);
-      font-size:.84rem;
-      font-weight:700;
-      height:fit-content;
-    }
-
-    .section{
-      padding:96px 0;
-    }
-
-    .section-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:end;
-      gap:26px;
-      margin-bottom:34px;
-    }
-
-    .section-head h2{
-      font-size:clamp(2rem,3vw,3rem);
-      line-height:1.05;
-      letter-spacing:-.03em;
-      margin-bottom:10px;
-    }
-
-    .section-head p{
-      color:var(--muted);
-      max-width:60ch;
-    }
-
-    .trust-band{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:18px;
-      margin-top:18px;
-    }
-
-    .trust-item{
-      background:rgba(255,255,255,.80);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:20px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(6px);
-    }
-
-    .trust-item strong{
-      display:block;
-      font-size:1.6rem;
-      color:var(--accent);
-      margin-bottom:5px;
-    }
-
-    .grid-3{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:22px;
-    }
-
-    .card{
-      background:rgba(255,255,255,.84);
-      border:1px solid var(--line);
-      border-radius:26px;
-      padding:28px;
-      box-shadow:var(--shadow);
-      transition:.28s ease;
-      backdrop-filter:blur(6px);
-    }
-
-    .card:hover{
-      transform:translateY(-6px);
-      border-color:rgba(92,132,103,.28);
-    }
-
-    .icon{
-      width:52px;
-      height:52px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      margin-bottom:18px;
-      font-size:1.3rem;
-      background:linear-gradient(135deg,var(--brand-soft),#f0f7f2);
-    }
-
-    .card h3{font-size:1.25rem;margin-bottom:10px}
-    .card p{color:var(--muted);margin-bottom:16px}
-    .card ul{list-style:none;display:grid;gap:10px;color:var(--text)}
-    .card li{position:relative;padding-left:22px}
-    .card li::before{
-      content:"•";
-      position:absolute;
-      left:0;
-      color:var(--brand);
-      font-size:1.1rem;
-    }
-
-    .split{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:26px;
-    }
-
-    .feature-panel{
-      background:linear-gradient(180deg,rgba(255,255,255,.90),rgba(245,251,247,.88));
-      border-radius:28px;
-      padding:30px;
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(6px);
-    }
-
-    .feature-panel h3{font-size:1.35rem;margin-bottom:14px}
-    .feature-panel p{color:var(--muted);margin-bottom:18px}
-
-    .list{
-      display:grid;
-      gap:12px;
-      list-style:none;
-    }
-
-    .list li{
-      padding:14px 16px;
-      background:rgba(255,255,255,.86);
-      border:1px solid var(--line);
-      border-radius:16px;
-      font-weight:600;
-    }
-
-    .process{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:18px;
-    }
-
-    .step{
-      background:rgba(255,255,255,.84);
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:26px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(6px);
-    }
-
-    .step-no{
-      width:48px;
-      height:48px;
-      border-radius:14px;
-      display:grid;
-      place-items:center;
-      background:var(--text);
-      color:#fff;
-      font-weight:800;
-      margin-bottom:18px;
-    }
-
-    .step h4{font-size:1.1rem;margin-bottom:8px}
-    .step p{color:var(--muted)}
-
-    .testimonial-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:22px;
-    }
-
-    .testimonial{
-      background:rgba(255,255,255,.86);
-      border:1px solid var(--line);
-      border-radius:26px;
-      padding:28px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(6px);
-    }
-
-    .testimonial p{
-      color:var(--muted);
-      margin:12px 0 18px;
-    }
-
-    .testimonial strong{display:block}
-    .testimonial span{color:var(--muted);font-size:.95rem}
-
-    .case-study{
-      margin-top:24px;
-      background:linear-gradient(180deg,rgba(255,255,255,.90),rgba(245,251,247,.88));
-      border:1px solid var(--line);
-      border-radius:28px;
-      padding:30px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(6px);
-    }
-
-    .case-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      gap:18px;
-      margin-top:18px;
-    }
-
-    .case-item{
-      background:rgba(255,255,255,.86);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:20px;
-    }
-
-    .case-item h4{margin-bottom:8px}
-    .case-item p{color:var(--muted)}
-
-    .quote-shell{
-      display:flex;
-      justify-content:center;
-    }
-
-    .quote{
-      width:100%;
-      background:linear-gradient(135deg, rgba(11,59,46,.88), rgba(20,83,45,.90));
-      color:white;
-      border-radius:34px;
-      padding:40px 34px;
-      box-shadow:0 28px 80px rgba(11,59,46,.22);
-      text-align:center;
-      backdrop-filter:blur(4px);
-      border:1px solid rgba(255,255,255,.10);
-    }
-
-    .quote .eyebrow{
-      margin-left:auto;
-      margin-right:auto;
-      display:inline-flex;
-      justify-content:center;
-      background:rgba(255,255,255,.12);
-      color:#d8f4e0;
-    }
-
-    .quote-logo{
-      height:82px;
-      width:auto;
-      margin:0 auto 18px;
-      object-fit:contain;
-      filter:brightness(1.06);
-    }
-
-    .quote h2{
-      margin:0 auto;
-      text-align:center;
-      font-size:clamp(2rem,4vw,3.2rem);
-      line-height:1.05;
-      letter-spacing:-.03em;
-      max-width:none;
-    }
-
-    .quote p{
-      font-size:1.08rem;
-      max-width:58ch;
-      color:rgba(255,255,255,.88);
-      margin:14px auto 24px;
-      text-align:center;
-    }
-
-    .contact-wrap{
-      display:grid;
-      grid-template-columns:.95fr 1.05fr;
-      gap:24px;
-      align-items:stretch;
-    }
-
-    .contact-card,
-    .form-card{
-      background:rgba(255,255,255,.88);
-      border:1px solid var(--line);
-      border-radius:28px;
-      padding:28px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(6px);
-    }
-
-    .people{display:grid;gap:16px;margin-top:22px}
-
-    .person{
-      padding:18px;
-      border-radius:20px;
-      background:rgba(248,252,250,.94);
-      border:1px solid var(--line);
-    }
-
-    .person h3{margin-bottom:4px}
-    .person p{color:var(--muted)}
-
-    form{display:grid;gap:14px}
-
-    .field,
-    textarea{
-      width:100%;
-      border:1px solid rgba(15,23,42,.12);
-      background:white;
-      border-radius:16px;
-      padding:15px 16px;
-      font:inherit;
-      color:var(--text);
-      outline:none;
-      transition:border-color .2s ease, box-shadow .2s ease;
-    }
-
-    .field:focus,
-    textarea:focus{
-      border-color:rgba(92,132,103,.55);
-      box-shadow:0 0 0 4px rgba(92,132,103,.10);
-    }
-
-    textarea{min-height:140px;resize:vertical}
-
-    .submit{
-      border:none;
-      cursor:pointer;
-      padding:16px 20px;
-      border-radius:16px;
-      background:linear-gradient(135deg,var(--brand),#719b7b);
-      color:white;
-      font:inherit;
-      font-weight:800;
-    }
-
-    .form-note{
-      display:none;
-      padding:14px 16px;
-      border-radius:16px;
-      background:#ecf6ee;
-      border:1px solid rgba(92,132,103,.18);
-      color:var(--brand-dark);
-      font-weight:600;
-    }
-
-    .form-note.show{display:block}
-
-    .sticky-cta{
-      position:fixed;
-      left:50%;
-      bottom:18px;
-      transform:translateX(-50%);
-      width:min(940px, calc(100vw - 24px));
-      background:rgba(11,59,46,.94);
-      color:white;
-      border-radius:24px;
-      padding:14px 16px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      box-shadow:0 18px 50px rgba(11,59,46,.25);
-      z-index:999;
-      backdrop-filter:blur(12px);
-    }
-
-    .sticky-cta p{
-      margin:0;
-      color:rgba(255,255,255,.86);
-      font-size:.95rem;
-    }
-
-    .sticky-cta .btn{
-      flex-shrink:0;
-      padding:13px 18px;
-    }
-
-    .sticky-logo{
-      height:40px;
-      width:auto;
-      object-fit:contain;
-      margin-right:8px;
-    }
-
-    .sticky-left{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    footer{
-      position:relative;
-      overflow:hidden;
-      padding:28px 0 120px;
-      color:var(--muted);
-      background:
-        linear-gradient(135deg, rgba(245,251,248,.94), rgba(245,251,248,.90)),
-        url('https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
-    }
-
-    .footer-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:20px;
-      padding-top:24px;
-      border-top:1px solid var(--line);
-    }
-
-    .footer-brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-    }
-
-    .footer-logo{
-      height:52px;
-      width:auto;
-    }
-
-    .footer-links{
-      display:flex;
-      flex-wrap:wrap;
-      gap:18px;
-    }
-
-    @media (max-width: 1080px){
-      .hero-wrap,
-      .split,
-      .contact-wrap,
-      .grid-3,
-      .process,
-      .trust-band,
-      .testimonial-grid,
-      .case-grid{
-        grid-template-columns:1fr 1fr;
-      }
-    }
-
-    @media (max-width: 860px){
-      .menu-toggle{display:inline-block}
-
-      .nav{
-        min-height:78px;
-      }
-
-      .nav-links{
-        position:fixed;
-        inset:0;
-        background:rgba(245,251,248,.98);
-        backdrop-filter:blur(16px);
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-        gap:24px;
-        transform:translateY(-100%);
-        transition:.3s ease;
-        z-index:1002;
-        font-size:1.1rem;
-      }
-
-      .nav-links.open{transform:translateY(0)}
-      .nav-cta{display:none}
-
-      .hero{padding-top:42px}
-      .hero-wrap,
-      .split,
-      .contact-wrap,
-      .grid-3,
-      .process,
-      .trust-band,
-      .mini-proof,
-      .testimonial-grid,
-      .case-grid{
-        grid-template-columns:1fr;
-      }
-
-      .section-head,
-      .footer-row,
-      .sticky-cta{
-        flex-direction:column;
-        align-items:flex-start;
-      }
-
-      .sticky-cta{
-        left:12px;
-        right:12px;
-        width:auto;
-        transform:none;
-        bottom:12px;
-        border-radius:20px;
-      }
-
-      .sticky-left{
-        align-items:flex-start;
-      }
-
-      .brand-logo{height:46px}
-      .quote-logo{height:70px}
-      .footer-logo{height:46px}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NK Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+
+body{
+background:#f5fbf8;
+color:#0f172a;
+}
+
+/* NAV */
+
+header{
+position:fixed;
+top:0;
+width:100%;
+background:rgba(255,255,255,0.9);
+backdrop-filter:blur(10px);
+z-index:1000;
+}
+
+.container{
+width:90%;
+max-width:1200px;
+margin:auto;
+}
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 0;
+}
+
+/* LOGO */
+
+.logo img{
+height:55px;
+}
+
+/* HERO */
+
+.hero{
+padding-top:140px;
+padding-bottom:100px;
+position:relative;
+}
+
+.hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:
+linear-gradient(90deg, rgba(245,251,248,.95), rgba(245,251,248,.8)),
+url('https://images.unsplash.com/photo-1520607162513-77705c0f0d4a') center/cover;
+z-index:-1;
+}
+
+.hero h1{
+font-size:52px;
+margin-bottom:20px;
+}
+
+.hero p{
+font-size:20px;
+max-width:700px;
+margin-bottom:30px;
+}
+
+.btn{
+padding:14px 26px;
+background:#5c8467;
+color:white;
+border-radius:8px;
+text-decoration:none;
+display:inline-block;
+}
+
+/* SECTIONS */
+
+.section{
+padding:100px 0;
+position:relative;
+}
+
+.section::before{
+content:"";
+position:absolute;
+inset:0;
+background-size:cover;
+background-position:center;
+opacity:0.15;
+z-index:-1;
+}
+
+.services::before{
+background-image:url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40');
+}
+
+.aoc::before{
+background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3');
+}
+
+.process::before{
+background-image:url('https://images.unsplash.com/photo-1559136555-9303baea8ebd');
+}
+
+.testimonials::before{
+background-image:url('https://images.unsplash.com/photo-1515169067868-5387ec356754');
+}
+
+.contact::before{
+background-image:url('https://images.unsplash.com/photo-1552581234-26160f608093');
+}
+
+.section-title{
+font-size:36px;
+text-align:center;
+margin-bottom:60px;
+}
+
+/* GRID */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:30px;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* QUOTE */
+
+.quote{
+background:linear-gradient(135deg,#0b3b2e,#14532d);
+color:white;
+padding:100px 20px;
+text-align:center;
+}
+
+.quote img{
+height:80px;
+margin-bottom:20px;
+
+/* hogy szépen illeszkedjen */
+filter:brightness(1.1) contrast(1.1);
+}
+
+.quote h2{
+font-size:40px;
+margin-bottom:20px;
+}
+
+.quote p{
+max-width:600px;
+margin:auto;
+margin-bottom:30px;
+}
+
+/* CONTACT */
+
+.contact{
+padding:100px 20px;
+}
+
+form{
+max-width:500px;
+margin:auto;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+input, textarea{
+padding:14px;
+border-radius:8px;
+border:1px solid #ddd;
+}
+
+button{
+padding:14px;
+background:#5c8467;
+color:white;
+border:none;
+border-radius:8px;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:30px;
+background:#020617;
+color:#cbd5f5;
+}
+
+footer img{
+height:50px;
+margin-bottom:10px;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+.hero h1{font-size:36px;}
+}
+</style>
+
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="container">
-      <nav class="nav">
-        <a href="#top" class="brand" aria-label="NK Studio kezdőlap">
-          <img src="IMG_4587.png" alt="NK Studio logó" class="brand-logo">
-          <span class="brand-text">
-            <strong>NK Studio</strong>
-            <span>Virtuális asszisztencia és AOC rendszer</span>
-          </span>
-        </a>
 
-        <ul class="nav-links" id="navLinks">
-          <li><a href="#services">Szolgáltatások</a></li>
-          <li><a href="#aoc">AOC rendszer</a></li>
-          <li><a href="#process">Működés</a></li>
-          <li><a href="#testimonials">Eredmények</a></li>
-          <li><a href="#contact">Kapcsolat</a></li>
-        </ul>
+<header>
+<div class="container">
+<nav>
 
-        <div class="nav-actions">
-          <a class="nav-cta" href="#contact">Ingyenes konzultáció</a>
-          <button class="menu-toggle" id="menuToggle" aria-label="Menü megnyitása" aria-expanded="false" aria-controls="navLinks">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </div>
-      </nav>
-    </div>
-  </header>
+<div class="logo">
+<img src="https://i.postimg.cc/qqWbjj0Z/IMG-4587.png" alt="NK Studio logó">
+</div>
 
-  <main id="top">
-    <section class="hero reveal">
-      <div class="container hero-wrap">
-        <div>
-          <div class="eyebrow">Operatív háttértámogatás • Strukturált növekedés</div>
-          <h1>Hatékony rendszerek vállalkozásoknak.</h1>
-          <p>
-            Az NK Studio virtuális asszisztenciával, projektmenedzsmenttel és az AOC rendszer bevezetésével segít abban, hogy a napi működés ne káosz, hanem skálázható, átlátható és delegálható rendszer legyen.
-          </p>
+<a class="btn" href="#contact">Konzultáció</a>
 
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#contact">Foglalj konzultációt</a>
-            <a class="btn btn-secondary" href="#services">Szolgáltatások megtekintése</a>
-          </div>
+</nav>
+</div>
+</header>
 
-          <div class="mini-proof">
-            <div>
-              <strong>Virtuális asszisztencia</strong>
-              <span>Adminisztratív és operatív tehermentesítés</span>
-            </div>
-            <div>
-              <strong>AOC rendszer</strong>
-              <span>Átláthatóbb napi működés és delegálás</span>
-            </div>
-            <div>
-              <strong>Projektfókusz</strong>
-              <span>Rendszerszintű kivitelezés, nem ad hoc tűzoltás</span>
-            </div>
-          </div>
-        </div>
+<!-- HERO -->
 
-        <div class="hero-card">
-          <div class="stack">
-            <div class="panel">
-              <div class="task-row">
-                <div>
-                  <div class="task-title">Folyamatok rendbetétele</div>
-                  <div class="task-copy">Napi működés, felelősségi körök és ismétlődő feladatok strukturálása.</div>
-                </div>
-                <span class="badge">AOC</span>
-              </div>
-              <div class="task-row">
-                <div>
-                  <div class="task-title">Operatív támogatás</div>
-                  <div class="task-copy">Admin, koordináció, utánkövetés és határidő-menedzsment egy kézben.</div>
-                </div>
-                <span class="badge">VA</span>
-              </div>
-              <div class="task-row">
-                <div>
-                  <div class="task-title">Projektkontroll</div>
-                  <div class="task-copy">Feladatok kiosztása, státuszok, priorizálás és végrehajtási fókusz.</div>
-                </div>
-                <span class="badge">PM</span>
-              </div>
-            </div>
+<section class="hero">
+<div class="container">
+<h1>Hatékony rendszerek vállalkozásoknak</h1>
+<p>Strukturált működés, kevesebb káosz, több kontroll.</p>
+<a class="btn" href="#contact">Ingyenes konzultáció</a>
+</div>
+</section>
 
-            <div class="panel">
-              <strong style="display:block;font-size:1.1rem;margin-bottom:8px;">Mit kapsz eredményként?</strong>
-              <p style="color:var(--muted);margin-bottom:14px;">
-                Kevesebb operatív szűk keresztmetszetet, átláthatóbb belső működést és egy stabilabb vállalati execution modellt.
-              </p>
-              <a class="btn btn-primary" style="width:100%;" href="#contact">Beszéljünk róla</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+<!-- SERVICES -->
 
-    <section class="section image-section bg-trust reveal">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h2>Operatív stabilitás, ami növekedést bír el</h2>
-            <p>
-              Az NK Studio fókusza, hogy a háttérfolyamatok is felnőjenek az üzleti célokhoz. Nem csak elvégzünk feladatokat, hanem működési rendszert építünk mögéjük.
-            </p>
-          </div>
-        </div>
+<section class="section services">
+<div class="container">
+<h2 class="section-title">Szolgáltatások</h2>
 
-        <div class="trust-band">
-          <div class="trust-item">
-            <strong>1 kézben</strong>
-            <span>Operatív koordináció, admin támogatás és rendszerépítés</span>
-          </div>
-          <div class="trust-item">
-            <strong>Átláthatóbb</strong>
-            <span>Folyamatok, státuszok, határidők és felelősségek</span>
-          </div>
-          <div class="trust-item">
-            <strong>Gyorsabb</strong>
-            <span>Kevesebb visszakérdezés, kevesebb elakadás, jobb priorizálás</span>
-          </div>
-          <div class="trust-item">
-            <strong>Skálázhatóbb</strong>
-            <span>Stabilabb execution modell a növekedési fázisokhoz</span>
-          </div>
-        </div>
-      </div>
-    </section>
+<div class="grid">
+<div class="card">Virtuális asszisztencia</div>
+<div class="card">Projektmenedzsment</div>
+<div class="card">Folyamatoptimalizálás</div>
+</div>
 
-    <section id="services" class="section image-section bg-services reveal">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h2>Szolgáltatások, amelyek a napi működést viszik előre</h2>
-            <p>
-              Az NK Studio három fő szolgáltatási pillére a virtuális asszisztencia, a projektmenedzsment és a folyamatoptimalizálás. Ezeket emeltem át egy erősebb, értékesítési fókuszú struktúrába.
-            </p>
-          </div>
-        </div>
+</div>
+</section>
 
-        <div class="grid-3">
-          <article class="card">
-            <div class="icon">✓</div>
-            <h3>Virtuális asszisztencia</h3>
-            <p>Adminisztratív és operatív támogatás vállalkozások számára, hogy a vezetői idő valóban stratégiai munkára menjen el.</p>
-            <ul>
-              <li>E-mail és naptár koordináció</li>
-              <li>Utánkövetések és szervezési feladatok</li>
-              <li>Napi operatív tehermentesítés</li>
-            </ul>
-          </article>
+<!-- AOC -->
 
-          <article class="card">
-            <div class="icon">↗</div>
-            <h3>Projektmenedzsment</h3>
-            <p>Feladatok és projektek koordinálása világos státuszkezeléssel, felelősségekkel és határidő-fegyelemmel.</p>
-            <ul>
-              <li>Projektstruktúra kialakítása</li>
-              <li>Feladatkiosztás és priorizálás</li>
-              <li>Státuszriportok és kontrollpontok</li>
-            </ul>
-          </article>
+<section class="section aoc">
+<div class="container">
+<h2 class="section-title">AOC rendszer</h2>
 
-          <article class="card">
-            <div class="icon">⚙</div>
-            <h3>Folyamatoptimalizálás</h3>
-            <p>Hatékonyabb működési rendszer kialakítása, hogy a csapat ne improvizáljon, hanem kiszámíthatóan teljesítsen.</p>
-            <ul>
-              <li>Visszatérő folyamatok standardizálása</li>
-              <li>Delegálási logika és működési rend</li>
-              <li>Átláthatóbb belső workflow</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
+<div class="grid">
+<div class="card">Időgazdálkodás</div>
+<div class="card">Átlátható működés</div>
+<div class="card">Csapat koordináció</div>
+</div>
 
-    <section id="aoc" class="section image-section bg-aoc reveal">
-      <div class="container split">
-        <div class="feature-panel">
-          <span class="eyebrow" style="margin-bottom:16px;">AOC rendszer</span>
-          <h3>A rendszer, ami nem csak rendet rak — hanem megtartja azt</h3>
-          <p>
-            Az AOC fókusza: strukturált napi működés, egységesebb folyamatok és jobb csapatkoordináció.
-          </p>
-          <ul class="list">
-            <li>Strukturált időgazdálkodás és napi működés</li>
-            <li>Átlátható, egységes működési rendszer</li>
-            <li>Hatékonyabb csapatkoordináció és együttműködés</li>
-          </ul>
-        </div>
+</div>
+</section>
 
-        <div class="feature-panel">
-          <h3>Mikor érdemes bevezetni?</h3>
-          <p>
-            Akkor, amikor a vállalkozás már nőne, de a háttérműködés elkezdi visszahúzni a tempót. Az AOC bevezetés ott ad áttörést, ahol sok a nyitott szál, sok a fejben tárolt információ és kevés a rendszeres execution kontroll.
-          </p>
-          <ul class="list">
-            <li>Ha túl sok minden a vezető fejében van</li>
-            <li>Ha csúsznak a feladatok és szétesnek a prioritások</li>
-            <li>Ha a csapat működik, de nem egységes logika mentén</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+<!-- PROCESS -->
 
-    <section id="process" class="section image-section bg-process reveal">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h2>Hogyan dolgozunk</h2>
-            <p>
-              A struktúra egyszerű és üzletileg tiszta: elemzés, stratégia, bevezetés, támogatás.
-            </p>
-          </div>
-        </div>
+<section class="section process">
+<div class="container">
+<h2 class="section-title">Hogyan dolgozunk</h2>
 
-        <div class="process">
-          <article class="step">
-            <div class="step-no">1</div>
-            <h4>Elemzés</h4>
-            <p>Feltérképezzük a jelenlegi működést, az elakadásokat és azokat a pontokat, ahol idő, energia vagy kontroll vész el.</p>
-          </article>
+<div class="grid">
+<div class="card">Elemzés</div>
+<div class="card">Stratégia</div>
+<div class="card">Bevezetés</div>
+<div class="card">Támogatás</div>
+</div>
 
-          <article class="step">
-            <div class="step-no">2</div>
-            <h4>Stratégia</h4>
-            <p>Megtervezzük az optimális működési modellt, a felelősségi rendet és a napi execution keretrendszert.</p>
-          </article>
+</div>
+</section>
 
-          <article class="step">
-            <div class="step-no">3</div>
-            <h4>Bevezetés</h4>
-            <p>Implementáljuk az AOC szemléletet, felállítjuk a workflow-kat, és gyakorlati működésbe tesszük a rendszert.</p>
-          </article>
+<!-- TESTIMONIALS -->
 
-          <article class="step">
-            <div class="step-no">4</div>
-            <h4>Támogatás</h4>
-            <p>Utánkövetéssel, finomhangolással és operatív támogatással biztosítjuk a stabil, fenntartható működést.</p>
-          </article>
-        </div>
-      </div>
-    </section>
+<section class="section testimonials">
+<div class="container">
+<h2 class="section-title">Eredmények</h2>
 
-    <section id="testimonials" class="section image-section bg-testimonials reveal">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h2>Eredmények, amik üzleti szinten is értelmezhetők</h2>
-            <p>
-              Itt már nem adminisztrációról beszélünk, hanem execution minőségről. Ez a blokk erősíti a bizalmat és a konverziós logikát.
-            </p>
-          </div>
-        </div>
+<div class="grid">
+<div class="card">„Rendszer lett a káoszból.”</div>
+<div class="card">„Átlátható működés.”</div>
+<div class="card">„Skálázhatóbb cég.”</div>
+</div>
 
-        <div class="testimonial-grid">
-          <article class="testimonial">
-            <div class="icon">★</div>
-            <p>„Végre nem a napi káosz irányította a működésünket. Az NK Studio rendszert tett a feladatok, a prioritások és az utánkövetések mögé.”</p>
-            <strong>Ügyvezető</strong>
-            <span>Szolgáltató vállalkozás</span>
-          </article>
+</div>
+</section>
 
-          <article class="testimonial">
-            <div class="icon">★</div>
-            <p>„A projektkoordináció átláthatóbb lett, a csapat pontosabban tudta, kinek mi a felelőssége, és érezhetően csökkent a belső súrlódás.”</p>
-            <strong>Operatív vezető</strong>
-            <span>Kisvállalati környezet</span>
-          </article>
+<!-- QUOTE -->
 
-          <article class="testimonial">
-            <div class="icon">★</div>
-            <p>„Nem csak tehermentesítést kaptunk, hanem egy működési logikát, amit később is tudtunk használni a növekedéshez.”</p>
-            <strong>Tulajdonos</strong>
-            <span>Növekedési fázisban lévő cég</span>
-          </article>
-        </div>
+<section class="quote">
+<img src="https://i.postimg.cc/qqWbjj0Z/IMG-4587.png" alt="NK Studio logó">
 
-        <div class="case-study">
-          <span class="eyebrow" style="margin-bottom:16px;">Mini esettanulmány</span>
-          <h3 style="font-size:1.6rem;line-height:1.1;letter-spacing:-.02em;">Kiinduló helyzet: sok nyitott szál, kevés kontroll</h3>
-          <p style="color:var(--muted);margin-top:10px;max-width:70ch;">
-            Egy fejlődő vállalkozásnál a napi működés túl sok manuális egyeztetésre épült. A feladatok szétcsúsztak, a felelősségi körök nem voltak egyértelműek, és a vezetői kapacitás folyamatosan operatív tűzoltásra ment el.
-          </p>
+<h2>Nem csak segítünk. Rendszert építünk.</h2>
 
-          <div class="case-grid">
-            <div class="case-item">
-              <h4>Probléma</h4>
-              <p>Szétszórt információk, csúszó feladatok, rendszertelen utánkövetés.</p>
-            </div>
-            <div class="case-item">
-              <h4>Beavatkozás</h4>
-              <p>Folyamatstruktúra, felelősségi logika, státuszkövetés és AOC alapú működési rend.</p>
-            </div>
-            <div class="case-item">
-              <h4>Eredmény</h4>
-              <p>Gyorsabb döntéshozatal, tisztább operáció és jobban delegálható napi működés.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+<p>
+Az igazi érték nem az, hogy leveszünk feladatokat a válladról, hanem hogy a működésed rendszerré válik.
+</p>
 
-    <section class="section image-section bg-quote reveal">
-      <div class="container quote-shell">
-        <div class="quote">
-          <img src="IMG_4587.png" alt="NK Studio logó" class="quote-logo">
-          <span class="eyebrow">NK Studio megközelítés</span>
-          <h2>Nem csak segítünk. Rendszert építünk.</h2>
-          <p>
-            Az igazi érték nem az, hogy valaki levesz néhány feladatot a válladról, hanem az, hogy a vállalkozásod működése kiszámíthatóbbá, gyorsabbá és delegálhatóbbá válik.
-          </p>
-          <a class="btn btn-primary" href="#contact">Kérj személyre szabott egyeztetést</a>
-        </div>
-      </div>
-    </section>
+<a class="btn" href="#contact">Konzultáció</a>
+</section>
 
-    <section id="contact" class="section image-section bg-contact reveal">
-      <div class="container contact-wrap">
-        <div class="contact-card">
-          <span class="eyebrow" style="margin-bottom:16px;">Kapcsolat</span>
-          <h2 style="font-size:clamp(2rem,3vw,2.7rem);line-height:1.05;letter-spacing:-.03em;">Beszéljünk a következő operatív szintről</h2>
-          <p style="color:var(--muted);margin-top:14px;">
-            Ha szeretnéd, hogy a vállalkozásod működése végre ne csak menjen, hanem skálázhatóan működjön, itt tudsz kapcsolatba lépni velünk.
-          </p>
+<!-- CONTACT -->
 
-          <div class="people">
-            <div class="person">
-              <h3>Kárpáti Lili</h3>
-              <p>Társalapító</p>
-              <p><a href="mailto:karpati.lili@nkstudio.hu">karpati.lili@nkstudio.hu</a></p>
-            </div>
+<section id="contact" class="section contact">
+<div class="container">
+<h2 class="section-title">Kapcsolat</h2>
 
-            <div class="person">
-              <h3>Nagy Gyula</h3>
-              <p>Társalapító</p>
-              <p><a href="mailto:nagy.gyula@nkstudio.hu">nagy.gyula@nkstudio.hu</a></p>
-            </div>
-          </div>
-        </div>
+<form>
+<input type="text" placeholder="Név">
+<input type="email" placeholder="Email">
+<textarea placeholder="Üzenet"></textarea>
+<button>Küldés</button>
+</form>
 
-        <div class="form-card">
-          <h3 style="font-size:1.4rem;margin-bottom:8px;">Írj nekünk</h3>
-          <p style="color:var(--muted);margin-bottom:18px;">Töltsd ki az űrlapot, és indulhat az egyeztetés.</p>
+</div>
+</section>
 
-          <form id="contactForm">
-            <input class="field" type="text" name="name" placeholder="Név" required />
-            <input class="field" type="email" name="email" placeholder="Email cím" required />
-            <input class="field" type="text" name="company" placeholder="Cégnév" />
-            <textarea name="message" placeholder="Miben van most a legnagyobb operatív elakadás?" required></textarea>
-            <button class="submit" type="submit">Üzenet küldése</button>
-            <div class="form-note" id="formNote">Köszönjük! A mintaoldalon az űrlap visszajelzése működik. Éles küldéshez egy Formspree, Netlify Forms vagy saját backend bekötése szükséges.</div>
-          </form>
-        </div>
-      </div>
-    </section>
-  </main>
+<footer>
+<img src="https://i.postimg.cc/qqWbjj0Z/IMG-4587.png">
+<p>© 2026 NK Studio</p>
+</footer>
 
-  <div class="sticky-cta" id="stickyCta">
-    <div class="sticky-left">
-      <img src="IMG_4587.png" alt="NK Studio logó" class="sticky-logo">
-      <div>
-        <strong style="display:block;margin-bottom:2px;">Készen állsz egy strukturáltabb működésre?</strong>
-        <p>Egyeztessünk, és nézzük meg, hol lehet a leggyorsabban operatív áttörést elérni.</p>
-      </div>
-    </div>
-    <a class="btn btn-primary" href="#contact">Konzultáció kérése</a>
-  </div>
-
-  <footer>
-    <div class="container footer-row">
-      <div class="footer-brand">
-        <img src="IMG_4587.png" alt="NK Studio logó" class="footer-logo">
-        <p>© 2026 NK Studio. Minden jog fenntartva.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#services">Szolgáltatások</a>
-        <a href="#aoc">AOC rendszer</a>
-        <a href="#process">Működés</a>
-        <a href="#contact">Kapcsolat</a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const menuToggle = document.getElementById('menuToggle');
-    const navLinks = document.getElementById('navLinks');
-    const navAnchors = navLinks.querySelectorAll('a');
-    const body = document.body;
-
-    if (menuToggle) {
-      menuToggle.addEventListener('click', () => {
-        const isOpen = navLinks.classList.toggle('open');
-        menuToggle.classList.toggle('active', isOpen);
-        menuToggle.setAttribute('aria-expanded', String(isOpen));
-        body.classList.toggle('menu-open', isOpen);
-      });
-    }
-
-    navAnchors.forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('open');
-        menuToggle.classList.remove('active');
-        menuToggle.setAttribute('aria-expanded', 'false');
-        body.classList.remove('menu-open');
-      });
-    });
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.15 });
-
-    document.querySelectorAll('.reveal').forEach(section => observer.observe(section));
-
-    const form = document.getElementById('contactForm');
-    const formNote = document.getElementById('formNote');
-
-    if (form) {
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        formNote.classList.add('show');
-        form.reset();
-      });
-    }
-
-    const stickyCta = document.getElementById('stickyCta');
-    const contactSection = document.getElementById('contact');
-
-    const ctaObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          stickyCta.style.opacity = '0';
-          stickyCta.style.pointerEvents = 'none';
-        } else {
-          stickyCta.style.opacity = '1';
-          stickyCta.style.pointerEvents = 'auto';
-        }
-      });
-    }, { threshold: 0.2 });
-
-    if (contactSection && stickyCta) {
-      stickyCta.style.transition = 'opacity .25s ease';
-      ctaObserver.observe(contactSection);
-    }
-  </script>
 </body>
 </html>
