@@ -151,6 +151,24 @@
 
     .hero{
       padding:74px 0 42px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(90deg, rgba(245,251,248,.94) 0%, rgba(245,251,248,.88) 42%, rgba(245,251,248,.74) 62%, rgba(245,251,248,.86) 100%),
+        url('https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
+      opacity:1;
+      z-index:0;
+    }
+
+    .hero > .container{
+      position:relative;
+      z-index:1;
     }
 
     .hero-wrap{
@@ -1021,7 +1039,7 @@
       <div class="container">
         <div class="quote">
           <span class="eyebrow" style="background:rgba(255,255,255,.12);color:#d1fae5;">NK Studio megközelítés</span>
-          <h2 style="font-size:clamp(2rem,4vw,3.2rem);line-height:1.05;letter-spacing:-.03em;max-width:12ch;">Nem csak segítünk. Operációt építünk.</h2>
+          <h2 style="font-size:clamp(2rem,4vw,3.2rem);line-height:1.05;letter-spacing:-.03em;max-width:none;">Nem csak segítünk. Rendszert építünk.</h2>
           <p>
             Az igazi érték nem az, hogy valaki levesz néhány feladatot a válladról, hanem az, hogy a vállalkozásod működése kiszámíthatóbbá, gyorsabbá és delegálhatóbbá válik.
           </p>
