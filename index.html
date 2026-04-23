@@ -115,6 +115,17 @@
 
     .nav-links a:hover{color:var(--brand-dark)}
 
+    .nav-aoc{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  line-height:1.05;
+}
+
+.nav-aoc span:first-child{
+  transform:translateX(6px);
+}
+
     .nav-actions{
       display:flex;
       align-items:center;
@@ -895,7 +906,12 @@
 
         <ul class="nav-links" id="navLinks">
           <li><a href="#services">Szolgáltatások</a></li>
-          <li><a href="#aoc">AOC rendszer</a></li>
+          <li>
+  <a href="#aoc" class="nav-aoc">
+    <span>AOC</span>
+    <span>rendszer</span>
+  </a>
+</li>
           <li><a href="#process">Működés</a></li>
           <li><a href="#testimonials">Eredmények</a></li>
           <li><a href="#contact">Kapcsolat</a></li>
