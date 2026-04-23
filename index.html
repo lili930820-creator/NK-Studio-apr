@@ -39,9 +39,22 @@
       line-height:1.6;
     }
 
+    body.menu-open{overflow:hidden}
+
     img{max-width:100%;display:block}
     a{text-decoration:none;color:inherit}
     .container{width:var(--container);margin:0 auto}
+
+    .reveal{
+      opacity:0;
+      transform:translateY(24px);
+      transition:opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
 
     .topbar{
       position:sticky;
@@ -67,6 +80,8 @@
       font-weight:800;
       font-size:1.1rem;
       letter-spacing:.02em;
+      position:relative;
+      z-index:1003;
     }
 
     .brand-mark{
@@ -93,6 +108,12 @@
 
     .nav-links a:hover{color:var(--brand-dark)}
 
+    .nav-actions{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
     .nav-cta{
       padding:12px 18px;
       background:var(--text);
@@ -101,6 +122,32 @@
       font-weight:700;
       box-shadow:var(--shadow);
     }
+
+    .menu-toggle{
+      display:none;
+      width:48px;
+      height:48px;
+      border:none;
+      border-radius:14px;
+      background:rgba(255,255,255,.9);
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      position:relative;
+      z-index:1003;
+    }
+
+    .menu-toggle span{
+      display:block;
+      width:20px;
+      height:2px;
+      background:var(--text);
+      margin:4px auto;
+      transition:.25s ease;
+    }
+
+    .menu-toggle.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+    .menu-toggle.active span:nth-child(2){opacity:0}
+    .menu-toggle.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
 
     .hero{
       padding:74px 0 42px;
@@ -394,19 +441,81 @@
     .step h4{font-size:1.1rem;margin-bottom:8px}
     .step p{color:var(--muted)}
 
+    .testimonial-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+    }
+
+    .testimonial{
+      background:rgba(255,255,255,.88);
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:28px;
+      box-shadow:var(--shadow);
+    }
+
+    .testimonial p{
+      color:var(--muted);
+      margin:12px 0 18px;
+    }
+
+    .testimonial strong{display:block}
+    .testimonial span{color:var(--muted);font-size:.95rem}
+
+    .case-study{
+      margin-top:24px;
+      background:linear-gradient(180deg,#ffffff,#f5fbf7);
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:30px;
+      box-shadow:var(--shadow);
+    }
+
+    .case-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .case-item{
+      background:rgba(255,255,255,.86);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:20px;
+    }
+
+    .case-item h4{margin-bottom:8px}
+    .case-item p{color:var(--muted)}
+
     .quote{
       background:linear-gradient(135deg, #0b3b2e, #14532d);
       color:white;
       border-radius:34px;
       padding:34px;
       box-shadow:0 28px 80px rgba(11,59,46,.22);
+      text-align:center;
+    }
+
+    .quote .eyebrow{
+      margin-left:auto;
+      margin-right:auto;
+      display:inline-flex;
+      justify-content:center;
+    }
+
+    .quote h2{
+      margin:0 auto;
+      text-align:center;
     }
 
     .quote p{
       font-size:1.08rem;
       max-width:58ch;
       color:rgba(255,255,255,.88);
-      margin:14px 0 24px;
+      margin:14px auto 24px;
+      text-align:center;
     }
 
     .contact-wrap{
@@ -471,8 +580,50 @@
       font-weight:800;
     }
 
+    .form-note{
+      display:none;
+      padding:14px 16px;
+      border-radius:16px;
+      background:#ecfdf5;
+      border:1px solid rgba(22,163,74,.18);
+      color:var(--brand-dark);
+      font-weight:600;
+    }
+
+    .form-note.show{display:block}
+
+    .sticky-cta{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      width:min(940px, calc(100vw - 24px));
+      background:rgba(11,59,46,.94);
+      color:white;
+      border-radius:24px;
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      box-shadow:0 18px 50px rgba(11,59,46,.25);
+      z-index:999;
+      backdrop-filter:blur(12px);
+    }
+
+    .sticky-cta p{
+      margin:0;
+      color:rgba(255,255,255,.86);
+      font-size:.95rem;
+    }
+
+    .sticky-cta .btn{
+      flex-shrink:0;
+      padding:13px 18px;
+    }
+
     footer{
-      padding:28px 0 50px;
+      padding:28px 0 120px;
       color:var(--muted);
     }
 
@@ -497,23 +648,38 @@
       .contact-wrap,
       .grid-3,
       .process,
-      .trust-band{
+      .trust-band,
+      .testimonial-grid,
+      .case-grid{
         grid-template-columns:1fr 1fr;
       }
     }
 
     @media (max-width: 860px){
+      .menu-toggle{display:inline-block}
+
       .nav{
-        flex-wrap:wrap;
-        justify-content:center;
-        padding:16px 0;
+        min-height:74px;
       }
 
       .nav-links{
-        flex-wrap:wrap;
+        position:fixed;
+        inset:0;
+        background:rgba(245,251,248,.98);
+        backdrop-filter:blur(16px);
+        flex-direction:column;
         justify-content:center;
-        gap:16px 20px;
+        align-items:center;
+        gap:24px;
+        transform:translateY(-100%);
+        transition:.3s ease;
+        z-index:1002;
+        font-size:1.1rem;
       }
+
+      .nav-links.open{transform:translateY(0)}
+
+      .nav-cta{display:none}
 
       .hero{padding-top:40px}
       .hero-wrap,
@@ -522,14 +688,26 @@
       .grid-3,
       .process,
       .trust-band,
-      .mini-proof{
+      .mini-proof,
+      .testimonial-grid,
+      .case-grid{
         grid-template-columns:1fr;
       }
 
       .section-head,
-      .footer-row{
+      .footer-row,
+      .sticky-cta{
         flex-direction:column;
         align-items:flex-start;
+      }
+
+      .sticky-cta{
+        left:12px;
+        right:12px;
+        width:auto;
+        transform:none;
+        bottom:12px;
+        border-radius:20px;
       }
     }
   </style>
@@ -543,20 +721,28 @@
           <span>NK Studio</span>
         </a>
 
-        <ul class="nav-links">
+        <ul class="nav-links" id="navLinks">
           <li><a href="#services">Szolgáltatások</a></li>
           <li><a href="#aoc">AOC rendszer</a></li>
           <li><a href="#process">Működés</a></li>
+          <li><a href="#testimonials">Eredmények</a></li>
           <li><a href="#contact">Kapcsolat</a></li>
         </ul>
 
-        <a class="nav-cta" href="#contact">Ingyenes konzultáció</a>
+        <div class="nav-actions">
+          <a class="nav-cta" href="#contact">Ingyenes konzultáció</a>
+          <button class="menu-toggle" id="menuToggle" aria-label="Menü megnyitása" aria-expanded="false" aria-controls="navLinks">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </nav>
     </div>
   </header>
 
   <main id="top">
-    <section class="hero">
+    <section class="hero reveal">
       <div class="container hero-wrap">
         <div>
           <div class="eyebrow">Operatív háttértámogatás • Strukturált növekedés</div>
@@ -624,7 +810,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section reveal">
       <div class="container">
         <div class="section-head">
           <div>
@@ -656,7 +842,7 @@
       </div>
     </section>
 
-    <section id="services" class="section">
+    <section id="services" class="section reveal">
       <div class="container">
         <div class="section-head">
           <div>
@@ -704,7 +890,7 @@
       </div>
     </section>
 
-    <section id="aoc" class="section">
+    <section id="aoc" class="section reveal">
       <div class="container split">
         <div class="feature-panel">
           <span class="eyebrow" style="margin-bottom:16px;">AOC rendszer</span>
@@ -733,7 +919,7 @@
       </div>
     </section>
 
-    <section id="process" class="section">
+    <section id="process" class="section reveal">
       <div class="container">
         <div class="section-head">
           <div>
@@ -772,7 +958,66 @@
       </div>
     </section>
 
-    <section class="section">
+    <section id="testimonials" class="section reveal">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>Eredmények, amik üzleti szinten is értelmezhetők</h2>
+            <p>
+              Ezen a szinten már nem adminisztrációról beszélünk, hanem execution minőségről. Beépítettem egy ügyfélvélemény és egy esettanulmány blokkot is, hogy az oldal bizalmi és konverziós oldalon is erősebb legyen.
+            </p>
+          </div>
+        </div>
+
+        <div class="testimonial-grid">
+          <article class="testimonial">
+            <div class="icon">★</div>
+            <p>"Végre nem a napi káosz irányította a működésünket. Az NK Studio rendszert tett a feladatok, a prioritások és az utánkövetések mögé."</p>
+            <strong>Ügyvezető</strong>
+            <span>Szolgáltató vállalkozás</span>
+          </article>
+
+          <article class="testimonial">
+            <div class="icon">★</div>
+            <p>"A projektkoordináció átláthatóbb lett, a csapat pontosabban tudta, kinek mi a felelőssége, és érezhetően csökkent a belső súrlódás."</p>
+            <strong>Operatív vezető</strong>
+            <span>Kisvállalati környezet</span>
+          </article>
+
+          <article class="testimonial">
+            <div class="icon">★</div>
+            <p>"Nem csak tehermentesítést kaptunk, hanem egy működési logikát, amit később is tudtunk használni a növekedéshez."</p>
+            <strong>Tulajdonos</strong>
+            <span>Növekedési fázisban lévő cég</span>
+          </article>
+        </div>
+
+        <div class="case-study">
+          <span class="eyebrow" style="margin-bottom:16px;">Mini esettanulmány</span>
+          <h3 style="font-size:1.6rem;line-height:1.1;letter-spacing:-.02em;">Kiinduló helyzet: sok nyitott szál, kevés kontroll</h3>
+          <p style="color:var(--muted);margin-top:10px;max-width:70ch;">
+            Egy fejlődő vállalkozásnál a napi működés túl sok manuális egyeztetésre épült. A feladatok szétcsúsztak, a felelősségi körök nem voltak egyértelműek, és a vezetői kapacitás folyamatosan operatív tűzoltásra ment el.
+          </p>
+
+          <div class="case-grid">
+            <div class="case-item">
+              <h4>Probléma</h4>
+              <p>Szétszórt információk, csúszó feladatok, rendszertelen utánkövetés.</p>
+            </div>
+            <div class="case-item">
+              <h4>Beavatkozás</h4>
+              <p>Folyamatstruktúra, felelősségi logika, státuszkövetés és AOC alapú működési rend.</p>
+            </div>
+            <div class="case-item">
+              <h4>Eredmény</h4>
+              <p>Gyorsabb döntéshozatal, tisztább operáció és jobban delegálható napi működés.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
       <div class="container">
         <div class="quote">
           <span class="eyebrow" style="background:rgba(255,255,255,.12);color:#d1fae5;">NK Studio megközelítés</span>
@@ -785,7 +1030,7 @@
       </div>
     </section>
 
-    <section id="contact" class="section">
+    <section id="contact" class="section reveal">
       <div class="container contact-wrap">
         <div class="contact-card">
           <span class="eyebrow" style="margin-bottom:16px;">Kapcsolat</span>
@@ -813,17 +1058,26 @@
           <h3 style="font-size:1.4rem;margin-bottom:8px;">Írj nekünk</h3>
           <p style="color:var(--muted);margin-bottom:18px;">Töltsd ki az űrlapot, és indulhat az egyeztetés.</p>
 
-          <form>
-            <input class="field" type="text" placeholder="Név" />
-            <input class="field" type="email" placeholder="Email cím" />
-            <input class="field" type="text" placeholder="Cégnév" />
-            <textarea placeholder="Miben van most a legnagyobb operatív elakadás?"></textarea>
+          <form id="contactForm">
+            <input class="field" type="text" name="name" placeholder="Név" required />
+            <input class="field" type="email" name="email" placeholder="Email cím" required />
+            <input class="field" type="text" name="company" placeholder="Cégnév" />
+            <textarea name="message" placeholder="Miben van most a legnagyobb operatív elakadás?" required></textarea>
             <button class="submit" type="submit">Üzenet küldése</button>
+            <div class="form-note" id="formNote">Köszönjük! A mintaoldalon az űrlap visszajelzése működik. Éles küldéshez egy Formspree, Netlify Forms vagy saját backend bekötése szükséges.</div>
           </form>
         </div>
       </div>
     </section>
   </main>
+
+  <div class="sticky-cta" id="stickyCta">
+    <div>
+      <strong style="display:block;margin-bottom:2px;">Készen állsz egy strukturáltabb működésre?</strong>
+      <p>Egyeztessünk, és nézzük meg, hol lehet a leggyorsabban operatív áttörést elérni.</p>
+    </div>
+    <a class="btn btn-primary" href="#contact">Konzultáció kérése</a>
+  </div>
 
   <footer>
     <div class="container footer-row">
@@ -836,5 +1090,71 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    const navAnchors = navLinks.querySelectorAll('a');
+    const body = document.body;
+
+    if (menuToggle) {
+      menuToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        menuToggle.classList.toggle('active', isOpen);
+        menuToggle.setAttribute('aria-expanded', String(isOpen));
+        body.classList.toggle('menu-open', isOpen);
+      });
+    }
+
+    navAnchors.forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        menuToggle.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        body.classList.remove('menu-open');
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(section => observer.observe(section));
+
+    const form = document.getElementById('contactForm');
+    const formNote = document.getElementById('formNote');
+
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        formNote.classList.add('show');
+        form.reset();
+      });
+    }
+
+    const stickyCta = document.getElementById('stickyCta');
+    const contactSection = document.getElementById('contact');
+
+    const ctaObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          stickyCta.style.opacity = '0';
+          stickyCta.style.pointerEvents = 'none';
+        } else {
+          stickyCta.style.opacity = '1';
+          stickyCta.style.pointerEvents = 'auto';
+        }
+      });
+    }, { threshold: 0.2 });
+
+    if (contactSection && stickyCta) {
+      stickyCta.style.transition = 'opacity .25s ease';
+      ctaObserver.observe(contactSection);
+    }
+  </script>
 </body>
 </html>
